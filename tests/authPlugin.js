@@ -19,11 +19,13 @@ describe('Github Authentication Plugin', function () {
 
 
     it('should throw error on invalid configuration', function (next) {
+        var testServer = server,
+            _serverConfig = server.config;
         (function () {
-            var testServer = server;
             testServer.config = {};
             return new github(testServer);
         }).should.throw('Please check your configuration file. Property object "githubAuth" is missing!');
+        server.config = _serverConfig;
         next();
     });
 
@@ -32,25 +34,23 @@ describe('Github Authentication Plugin', function () {
         next();
     });
 
-    // it('should initialize properly', function (next) {
-    //     var _server = _clone(server);
-    //     var _serverSettings = server.config.githubAuth;
-    //     var _auth;
+    it('should initialize properly', function (next) {
+        var _server = _clone(server);
+        var _serverSettings = server.config.githubAuth;
+        var _auth = new github(_server);
 
-    //     if (_server.hasOwnProperty('passport')) {
-    //         delete _server.passport;
-    //     }
-    //     (function () {
-    //         delete _server.config.githubAuth;
-    //         _auth = new github(_server);
-    //         return _auth;
-    //     }).should.throw('Please check your configuration file. Property object "githubAuth" is missing!');
+        if (_server.hasOwnProperty('passport')) {
+            delete _server.passport;
+        }
+        // _server.config.githubAuth = _serverSettings;
+        should(_auth.checkConfiguration()).should.not.throw('Please check your configuration file. Property object "githubAuth" is missing!');
+        next();
+    });
 
-    //     _server.config.githubAuth = _serverSettings;
-
-    //     should(_auth.checkConfiguration()).should.not.throw('Please check your configuration file. Property object "githubAuth" is missing!');
-    //     next();
-    // });
+    it('should call initGithubAuth', function(next){
+        should( (auth.initGithubAuth()).constructor.name).be.eql('Authenticator');
+        next();
+    });
 
     it('should attach passport to server', function (next) {
         var passportKeys = ['_key',
@@ -114,7 +114,7 @@ describe('Github Authentication Plugin', function () {
         var url = 'http://localhost:' + server.port + '/fooMe';
         //First off, lets check if the correct auth type is set
         should(auth.config.APIKeyAuthType).be.eql('plugin');
-        should(auth.config.APIKeyAuthPlugin).be.eql('appc.githubauth'); 
+        should(auth.config.APIKeyAuthPlugin).be.eql('appc.githubauth');
         //And now, let's make an unauthenticated request
         request({
             method: 'GET',
