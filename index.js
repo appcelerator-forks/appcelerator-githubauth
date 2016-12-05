@@ -6,15 +6,12 @@ var request = require('request');
  * @param Object server
  * @param Object testConfig - optional - configuration settings for testing purposes
  */
-function Plugin(server, testConfig) {
+function Plugin(server) {
     this.server = server;
     this.config = server.config;
-    if(testConfig){
-        this.config = testConfig;
-    }
     //Check if we have the right config
     this.checkConfiguration();
-    this.settings = this.config.gihubAuth;
+    this.settings = this.config.githubAuth;
     //Init if not present
     if (typeof this.server.passport === "undefined")
         this.initGithubAuth();
@@ -33,8 +30,8 @@ Plugin.prototype.getPassport = function () {
 
 //Checks if config parameters are supplied
 Plugin.prototype.checkConfiguration = function () {
-    if (typeof this.config.gihubAuth === "undefined") {
-        throw new Error('Please check your configuration file. Property object "gihubAuth" is missing!');
+    if (typeof this.config.githubAuth === "undefined") {
+        throw new Error('Please check your configuration file. Property object "githubAuth" is missing!');
     }
     return true;
 }
@@ -43,7 +40,7 @@ Plugin.prototype.checkConfiguration = function () {
 // Check if the request has the X-Secret header and its value matches the config file
 Plugin.prototype.validateRequest = function (request, response) {
     if ((typeof request.isAuthenticated !== 'function') || !request.isAuthenticated()) {
-        if ((request.url).indexOf(this.config.gihubAuth.loginRoute) >= 0) {
+        if ((request.url).indexOf(this.config.githubAuth.loginRoute) >= 0) {
             return true;
         }
         //Loop trough all authorized paths
