@@ -92,7 +92,6 @@ describe('Github Authentication Plugin', function () {
         };
         //Map result to object
         var _mappedObject = auth.mapResultToObject(auth, testResult);
-        // console.log(_mappedObject);
         should(Object.key(_mappedObject)).be.eql(["id", "displayName", "username", "profileUrl", "_json"]);
         next();
     });

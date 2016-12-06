@@ -62,13 +62,14 @@ Plugin.prototype.initGithubAuth = function () {
     if (this.server && this.server.app) {
         var GitHubStrategy = require('passport-github').Strategy;
         var userObject = new Object();
+        var self = this;
 
         passport.use(new GitHubStrategy({
             clientID: this.settings.clientID,
             clientSecret: this.settings.clientSecret,
             callbackURL: this.settings.callbackURL,
         }, function (accessToken, refreshToken, profile, cb) {
-            userObject = this.mapResultToObject(this, profile);
+            userObject = self.mapResultToObject(self, profile);
             return cb(null, userObject);
         }
         ));
@@ -103,10 +104,11 @@ Plugin.prototype.mapResultToObject = function (self, _object) {
         };
     }
     (Object.keys(_sett)).forEach(function (setting, key) {
-        if (_object.hasOwnProperty(settings[setting])) {
-            returnObject[setting] = settings[setting];
+        if (_object.hasOwnProperty(_sett[setting])) {
+            returnObject[setting] = _object[(_sett[setting])];
         }
     });
+
     return returnObject;
 };
 
