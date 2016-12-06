@@ -68,11 +68,7 @@ Plugin.prototype.initGithubAuth = function () {
             clientSecret: this.settings.clientSecret,
             callbackURL: this.settings.callbackURL,
         }, function (accessToken, refreshToken, profile, cb) {
-            userObject.githubId = profile.id;
-            userObject.displayName = profile.displayName;
-            userObject.username = profile.username;
-            userObject.profileUrl = profile.profileUrl;
-            userObject.data = profile._json;
+            userObject = this.mapResultToObject(this, profile);
             return cb(null, userObject);
         }
         ));
@@ -91,5 +87,27 @@ Plugin.prototype.initGithubAuth = function () {
         return passport;
     }
 }
+
+Plugin.prototype.mapResultToObject = function (self, _object) {
+    var returnObject = new Object;
+    var _sett;
+    if (typeof self.settings.mappedObject !== "undefined") {
+        _sett = self.settings.mappedObject;
+    } else {
+        _sett = {
+            githubId: "id",
+            displayName: "displayName",
+            username: "username",
+            profileUrl: "profileUrl",
+            data: "_json"
+        };
+    }
+    (Object.keys(_sett)).forEach(function (setting, key) {
+        if (_object.hasOwnProperty(settings[setting])) {
+            returnObject[setting] = settings[setting];
+        }
+    });
+    return returnObject;
+};
 
 module.exports = Plugin;

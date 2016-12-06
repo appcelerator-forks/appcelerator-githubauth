@@ -47,8 +47,8 @@ describe('Github Authentication Plugin', function () {
         next();
     });
 
-    it('should call initGithubAuth', function(next){
-        should( (auth.initGithubAuth()).constructor.name).be.eql('Authenticator');
+    it('should call initGithubAuth', function (next) {
+        should((auth.initGithubAuth()).constructor.name).be.eql('Authenticator');
         next();
     });
 
@@ -74,10 +74,29 @@ describe('Github Authentication Plugin', function () {
             'clientSecret',
             'callbackURL',
             'loginRoute',
-            'authPaths'];
+            'authPaths',
+            'mappedObject'];
         should(Object.keys(auth.settings)).eql(apiConfigurationKeys);
         next();
     });
+
+    it('should return correct result object', function (next) {
+        var testResult = {
+            id: 14,
+            displayName: "First Last Name",
+            username: "username",
+            profileUrl: "profileUrl://url.com",
+            _json: {
+                avatar_url: 'phine://com',
+            }
+        };
+        //Map result to object
+        var _mappedObject = auth.mapResultToObject(auth, testResult);
+        // console.log(_mappedObject);
+        should(Object.key(_mappedObject)).be.eql(["id", "displayName", "username", "profileUrl", "_json"]);
+        next();
+    });
+
 
     it('should match all urls', function (next) {
         should(auth.matchURL({})).be.true;
